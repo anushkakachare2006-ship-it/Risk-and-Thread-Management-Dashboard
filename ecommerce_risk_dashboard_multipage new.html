@@ -1,0 +1,382 @@
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+.app{display:flex;min-height:680px;background:#0d0f14;color:#e2e8f0;border-radius:12px;overflow:hidden;font-family:var(--font-sans);font-size:13px;}
+.sidebar{width:180px;min-width:180px;background:#111318;border-right:0.5px solid #2a2d35;display:flex;flex-direction:column;padding:20px 0;}
+.sb-brand{padding:0 16px 18px;border-bottom:0.5px solid #2a2d35;margin-bottom:10px;}
+.sb-logo{font-size:14px;font-weight:500;color:#e2e8f0;display:flex;align-items:center;gap:8px;}
+.sb-icon{width:28px;height:28px;background:#e24b4a;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:13px;}
+.sb-section{font-size:10px;color:#4a5568;text-transform:uppercase;letter-spacing:1px;padding:0 16px 6px;margin-top:8px;}
+.nav-item{display:flex;align-items:center;gap:10px;padding:9px 16px;color:#718096;cursor:pointer;border-left:2px solid transparent;transition:all .15s;font-size:13px;}
+.nav-item:hover{background:#1a1d24;color:#e2e8f0;}
+.nav-item.active{background:#1a1d24;color:#63b3ed;border-left:2px solid #63b3ed;}
+.nav-dot{width:7px;height:7px;border-radius:50%;background:#4a5568;}
+.nav-dot.blue{background:#63b3ed;}
+.nav-dot.red{background:#fc8181;}
+.nav-dot.amber{background:#f6ad55;}
+.nav-dot.gray{background:#718096;}
+.sb-footer{margin-top:auto;padding:14px 16px;border-top:0.5px solid #2a2d35;font-size:11px;color:#4a5568;}
+.live-dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:#68d391;margin-right:5px;}
+.main{flex:1;overflow:hidden;display:flex;flex-direction:column;}
+.page{display:none;flex:1;padding:18px;overflow-y:auto;flex-direction:column;gap:14px;}
+.page.active{display:flex;}
+.top-bar{display:flex;justify-content:space-between;align-items:center;}
+.top-bar h1{font-size:15px;font-weight:500;color:#e2e8f0;}
+.top-bar p{font-size:11px;color:#4a5568;margin-top:2px;}
+.live-badge{background:#1a2e1a;color:#68d391;border:0.5px solid #2d5a2d;border-radius:20px;padding:3px 10px;font-size:11px;display:flex;align-items:center;gap:5px;}
+.cards-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;}
+.card{background:#111318;border:0.5px solid #2a2d35;border-radius:10px;padding:14px;}
+.card-lbl{font-size:10px;color:#718096;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;}
+.card-val{font-size:24px;font-weight:500;}
+.card-val.green{color:#68d391;} .card-val.red{color:#fc8181;} .card-val.amber{color:#f6ad55;}
+.card-sub{font-size:10px;color:#4a5568;margin-top:3px;}
+.trend{color:#68d391;} .trend.dn{color:#fc8181;}
+.charts-row{display:grid;grid-template-columns:2fr 1fr;gap:10px;}
+.chart-card{background:#111318;border:0.5px solid #2a2d35;border-radius:10px;padding:14px;}
+.chart-title{font-size:11px;font-weight:500;color:#a0aec0;margin-bottom:10px;text-transform:uppercase;letter-spacing:.5px;}
+.bottom-grid{display:grid;grid-template-columns:3fr 2fr;gap:10px;}
+.tbl-card{background:#111318;border:0.5px solid #2a2d35;border-radius:10px;padding:14px;overflow:hidden;}
+.sec-title{font-size:11px;font-weight:500;color:#a0aec0;margin-bottom:10px;text-transform:uppercase;letter-spacing:.5px;}
+table{width:100%;border-collapse:collapse;table-layout:fixed;}
+th{font-size:10px;color:#4a5568;text-transform:uppercase;letter-spacing:.5px;padding:0 8px 8px;text-align:left;border-bottom:0.5px solid #2a2d35;font-weight:400;}
+td{padding:8px;font-size:12px;color:#a0aec0;border-bottom:0.5px solid #1a1d24;}
+tr:last-child td{border-bottom:none;}
+tr:hover td{background:#151820;color:#e2e8f0;}
+.badge{display:inline-block;padding:2px 7px;border-radius:12px;font-size:10px;font-weight:500;}
+.b-ok{background:#1a2e1a;color:#68d391;border:0.5px solid #2d5a2d;}
+.b-fail{background:#2e1a1a;color:#fc8181;border:0.5px solid #5a2d2d;}
+.b-pend{background:#2e2a1a;color:#f6ad55;border:0.5px solid #5a4a2d;}
+.b-low{background:#1a2e1a;color:#68d391;border:0.5px solid #2d5a2d;}
+.b-med{background:#2e2a1a;color:#f6ad55;border:0.5px solid #5a4a2d;}
+.b-high{background:#2e1a1a;color:#fc8181;border:0.5px solid #5a2d2d;}
+.b-crit{background:#3e1010;color:#feb2b2;border:0.5px solid #7a1f1f;}
+.b-info{background:#1a2535;color:#63b3ed;border:0.5px solid #2d4a6a;}
+.alerts-card{background:#111318;border:0.5px solid #2a2d35;border-radius:10px;padding:14px;display:flex;flex-direction:column;}
+.alerts-list{flex:1;display:flex;flex-direction:column;gap:6px;}
+.alert-item{background:#0d1117;border:0.5px solid #2a2d35;border-left:2px solid #e24b4a;border-radius:0 6px 6px 0;padding:8px 10px;}
+.alert-item .at{color:#4a5568;font-size:10px;margin-top:3px;}
+.alert-item.new{animation:flashIn .5s ease;}
+@keyframes flashIn{0%{background:#2e2a1a;opacity:0;transform:translateY(-4px);}100%{background:#0d1117;opacity:1;transform:translateY(0);}}
+.sim-btn{margin-top:10px;background:#e24b4a;color:#fff;border:none;border-radius:8px;padding:8px 14px;font-size:12px;font-weight:500;cursor:pointer;width:100%;transition:background .15s,transform .1s;}
+.sim-btn:hover{background:#c53030;}
+.sim-btn:active{transform:scale(.98);}
+.leg{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:8px;font-size:11px;color:#718096;}
+.swatch{display:inline-block;width:9px;height:9px;border-radius:2px;margin-right:3px;vertical-align:middle;}
+.full-alerts{display:flex;flex-direction:column;gap:8px;}
+.full-alert{background:#111318;border:0.5px solid #2a2d35;border-left:3px solid #e24b4a;border-radius:0 8px 8px 0;padding:12px 14px;display:flex;justify-content:space-between;align-items:flex-start;}
+.full-alert.warn{border-left-color:#f6ad55;}
+.full-alert.info{border-left-color:#63b3ed;}
+.full-alert .fa-title{font-size:13px;color:#e2e8f0;margin-bottom:4px;}
+.full-alert .fa-meta{font-size:11px;color:#4a5568;}
+.fa-right{display:flex;flex-direction:column;align-items:flex-end;gap:4px;}
+.alert-actions{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap;}
+.act-btn{background:#1a1d24;color:#a0aec0;border:0.5px solid #2a2d35;border-radius:7px;padding:6px 12px;font-size:11px;cursor:pointer;transition:all .15s;}
+.act-btn:hover{background:#252830;color:#e2e8f0;}
+.act-btn.primary{background:#185fa5;color:#b5d4f4;border-color:#2a6fa5;}
+.act-btn.primary:hover{background:#1a6fb5;}
+.alert-filters{display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap;}
+.filter-btn{background:#1a1d24;color:#718096;border:0.5px solid #2a2d35;border-radius:20px;padding:4px 12px;font-size:11px;cursor:pointer;transition:all .15s;}
+.filter-btn.active{background:#1a2535;color:#63b3ed;border-color:#2d4a6a;}
+.filter-btn:hover{color:#e2e8f0;}
+.txn-search{display:flex;gap:8px;margin-bottom:12px;}
+.txn-search input{flex:1;background:#111318;border:0.5px solid #2a2d35;border-radius:7px;padding:6px 10px;color:#e2e8f0;font-size:12px;outline:none;}
+.txn-search input:focus{border-color:#63b3ed;}
+.txn-search select{background:#111318;border:0.5px solid #2a2d35;border-radius:7px;padding:6px 10px;color:#a0aec0;font-size:12px;outline:none;}
+.settings-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.setting-card{background:#111318;border:0.5px solid #2a2d35;border-radius:10px;padding:14px;}
+.setting-row{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:0.5px solid #1a1d24;}
+.setting-row:last-child{border-bottom:none;}
+.setting-lbl{font-size:12px;color:#a0aec0;}
+.setting-sub{font-size:10px;color:#4a5568;margin-top:2px;}
+.toggle{position:relative;width:36px;height:20px;cursor:pointer;}
+.toggle input{opacity:0;width:0;height:0;}
+.toggle-track{position:absolute;inset:0;background:#2a2d35;border-radius:20px;transition:.2s;}
+.toggle input:checked+.toggle-track{background:#185fa5;}
+.toggle-thumb{position:absolute;top:3px;left:3px;width:14px;height:14px;background:#718096;border-radius:50%;transition:.2s;}
+.toggle input:checked~.toggle-thumb{left:19px;background:#63b3ed;}
+.save-btn{background:#185fa5;color:#b5d4f4;border:0.5px solid #2a6fa5;border-radius:8px;padding:8px 18px;font-size:12px;font-weight:500;cursor:pointer;transition:all .15s;margin-top:10px;}
+.save-btn:hover{background:#1a6fb5;}
+.setting-input{background:#0d0f14;border:0.5px solid #2a2d35;border-radius:6px;padding:5px 8px;color:#e2e8f0;font-size:12px;width:90px;outline:none;}
+.setting-input:focus{border-color:#63b3ed;}
+.page-cards2{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;}
+.txn-full table{table-layout:auto;}
+</style>
+
+<div class="app">
+  <nav class="sidebar">
+    <div class="sb-brand">
+      <div class="sb-logo"><div class="sb-icon">&#9673;</div>RiskWatch</div>
+    </div>
+    <div class="sb-section">Navigation</div>
+    <div class="nav-item active" data-page="dashboard"><span class="nav-dot blue"></span>Dashboard</div>
+    <div class="nav-item" data-page="alerts"><span class="nav-dot red"></span>Alerts</div>
+    <div class="nav-item" data-page="transactions"><span class="nav-dot amber"></span>Transactions</div>
+    <div class="nav-item" data-page="settings"><span class="nav-dot gray"></span>Settings</div>
+    <div class="sb-footer"><div><span class="live-dot"></span>System online</div><div style="margin-top:4px;">Last sync: 2 min ago</div></div>
+  </nav>
+
+  <main class="main">
+
+    <div class="page active" id="page-dashboard">
+      <div class="top-bar">
+        <div><h1>Risk &amp; Threat Dashboard</h1><p>April 25, 2026 &nbsp;·&nbsp; E-Commerce Platform</p></div>
+        <div class="live-badge"><span class="live-dot"></span>Live Monitoring</div>
+      </div>
+      <div class="cards-grid">
+        <div class="card"><div class="card-lbl">Total Transactions</div><div class="card-val green">12,450</div><div class="card-sub"><span class="trend">&#8593; 8.4%</span> vs yesterday</div></div>
+        <div class="card"><div class="card-lbl">Failed Transactions</div><div class="card-val red">342</div><div class="card-sub"><span class="trend dn">&#8593; 2.7%</span> vs yesterday</div></div>
+        <div class="card"><div class="card-lbl">Fraud Alerts</div><div class="card-val amber">18</div><div class="card-sub"><span class="trend">&#8595; 3 alerts</span> resolved today</div></div>
+      </div>
+      <div class="charts-row">
+        <div class="chart-card">
+          <div class="chart-title">Transactions over time</div>
+          <div style="position:relative;width:100%;height:170px;"><canvas id="lineChart" role="img" aria-label="Line chart of transaction volume by hour of day, peaking at noon and 8pm.">Volume peaks midday and evening.</canvas></div>
+        </div>
+        <div class="chart-card">
+          <div class="chart-title">Safe vs fraudulent</div>
+          <div class="leg"><span><span class="swatch" style="background:#68d391;"></span>Safe 95%</span><span><span class="swatch" style="background:#e24b4a;"></span>Fraud 5%</span></div>
+          <div style="position:relative;width:100%;height:140px;"><canvas id="pieChart" role="img" aria-label="Doughnut chart: 95% safe, 5% fraud.">95% safe, 5% fraudulent.</canvas></div>
+        </div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-title">Risk level distribution</div>
+        <div class="leg"><span><span class="swatch" style="background:#68d391;"></span>Low</span><span><span class="swatch" style="background:#f6ad55;"></span>Medium</span><span><span class="swatch" style="background:#fc8181;"></span>High</span><span><span class="swatch" style="background:#e24b4a;"></span>Critical</span></div>
+        <div style="position:relative;width:100%;height:120px;"><canvas id="barChart" role="img" aria-label="Bar chart of risk distribution: Low 7200, Medium 3890, High 1018, Critical 342.">Low 7200, Medium 3890, High 1018, Critical 342.</canvas></div>
+      </div>
+      <div class="bottom-grid">
+        <div class="tbl-card">
+          <div class="sec-title">Recent transactions</div>
+          <table><thead><tr><th style="width:22%">Name</th><th style="width:18%">Amount</th><th style="width:22%">Status</th><th style="width:20%">Risk</th><th style="width:18%">Time</th></tr></thead>
+          <tbody>
+            <tr><td>Rahul S.</td><td>&#8377;500</td><td><span class="badge b-ok">Success</span></td><td><span class="badge b-low">Low</span></td><td>14:32</td></tr>
+            <tr><td>Sneha P.</td><td>&#8377;2,000</td><td><span class="badge b-fail">Failed</span></td><td><span class="badge b-high">High</span></td><td>14:28</td></tr>
+            <tr><td>Arjun M.</td><td>&#8377;750</td><td><span class="badge b-ok">Success</span></td><td><span class="badge b-med">Medium</span></td><td>14:19</td></tr>
+            <tr><td>Priya K.</td><td>&#8377;12,500</td><td><span class="badge b-fail">Failed</span></td><td><span class="badge b-crit">Critical</span></td><td>14:11</td></tr>
+            <tr><td>Vikram R.</td><td>&#8377;320</td><td><span class="badge b-pend">Pending</span></td><td><span class="badge b-low">Low</span></td><td>14:07</td></tr>
+          </tbody></table>
+        </div>
+        <div class="alerts-card">
+          <div class="sec-title">Threat alerts</div>
+          <div class="alerts-list" id="dash-alerts">
+            <div class="alert-item"><div>Suspicious login — IP 103.24.xx.xx</div><div class="at">14:30 · Auth module</div></div>
+            <div class="alert-item"><div>Multiple failed payments — User #U4921</div><div class="at">14:22 · Payment gateway</div></div>
+            <div class="alert-item"><div>Unusual location — Mumbai &#8594; Dubai</div><div class="at">14:15 · Geo-detection</div></div>
+            <div class="alert-item"><div>High-value order flagged — &#8377;85,000</div><div class="at">14:08 · Risk engine</div></div>
+          </div>
+          <button class="sim-btn" id="simBtn">&#128680; Simulate Attack</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="page" id="page-alerts">
+      <div class="top-bar">
+        <div><h1>Alerts Center</h1><p>18 active alerts &nbsp;·&nbsp; 3 resolved today</p></div>
+        <div class="live-badge"><span class="live-dot"></span>Monitoring Active</div>
+      </div>
+      <div class="cards-grid">
+        <div class="card"><div class="card-lbl">Critical</div><div class="card-val red">4</div><div class="card-sub">Requires immediate action</div></div>
+        <div class="card"><div class="card-lbl">Warnings</div><div class="card-val amber">9</div><div class="card-sub">Under investigation</div></div>
+        <div class="card"><div class="card-lbl">Informational</div><div class="card-val" style="color:#63b3ed;">5</div><div class="card-sub">Logged, no action needed</div></div>
+      </div>
+      <div class="alert-filters">
+        <div class="filter-btn active" data-filter="all">All (18)</div>
+        <div class="filter-btn" data-filter="crit">Critical (4)</div>
+        <div class="filter-btn" data-filter="warn">Warning (9)</div>
+        <div class="filter-btn" data-filter="info">Info (5)</div>
+      </div>
+      <div class="full-alerts" id="full-alerts-list">
+        <div class="full-alert" data-type="crit"><div><div class="fa-title">SQL injection attempt blocked</div><div class="fa-meta">14:31 · WAF engine · Endpoint: /api/checkout</div></div><div class="fa-right"><span class="badge b-crit">Critical</span><div class="alert-actions"><div class="act-btn primary">Investigate</div><div class="act-btn">Dismiss</div></div></div></div>
+        <div class="full-alert" data-type="crit"><div><div class="fa-title">Account takeover attempt — User #U8812</div><div class="fa-meta">14:29 · Auth engine · 12 failed login attempts</div></div><div class="fa-right"><span class="badge b-crit">Critical</span><div class="alert-actions"><div class="act-btn primary">Block User</div><div class="act-btn">Dismiss</div></div></div></div>
+        <div class="full-alert" data-type="crit"><div><div class="fa-title">Card testing attack — 47 attempts in 3 min</div><div class="fa-meta">14:25 · Payment fraud module · IP: 91.108.xx.xx</div></div><div class="fa-right"><span class="badge b-crit">Critical</span><div class="alert-actions"><div class="act-btn primary">Block IP</div><div class="act-btn">Dismiss</div></div></div></div>
+        <div class="full-alert" data-type="crit"><div><div class="fa-title">Dark web credential match — email #U3371</div><div class="fa-meta">14:18 · Threat intelligence · Breach: DataCorp 2025</div></div><div class="fa-right"><span class="badge b-crit">Critical</span><div class="alert-actions"><div class="act-btn primary">Force Reset</div><div class="act-btn">Dismiss</div></div></div></div>
+        <div class="full-alert warn" data-type="warn"><div><div class="fa-title">Unusual location access — Mumbai &#8594; Dubai</div><div class="fa-meta">14:15 · Geo-detection · User #U2201 · 4h gap</div></div><div class="fa-right"><span class="badge b-high">Warning</span><div class="alert-actions"><div class="act-btn primary">Challenge</div><div class="act-btn">Dismiss</div></div></div></div>
+        <div class="full-alert warn" data-type="warn"><div><div class="fa-title">Multiple failed payments — User #U4921</div><div class="fa-meta">14:22 · Payment gateway · 6 failures in 10 min</div></div><div class="fa-right"><span class="badge b-high">Warning</span><div class="alert-actions"><div class="act-btn primary">Review</div><div class="act-btn">Dismiss</div></div></div></div>
+        <div class="full-alert warn" data-type="warn"><div><div class="fa-title">Bot traffic spike — 4,200 req/min</div><div class="fa-meta">14:20 · Rate limiter · Origin: AS7922</div></div><div class="fa-right"><span class="badge b-high">Warning</span><div class="alert-actions"><div class="act-btn primary">Rate Limit</div><div class="act-btn">Dismiss</div></div></div></div>
+        <div class="full-alert warn" data-type="warn"><div><div class="fa-title">High-value order flagged — &#8377;85,000 cart</div><div class="fa-meta">14:08 · Order risk engine · New customer account</div></div><div class="fa-right"><span class="badge b-med">Warning</span><div class="alert-actions"><div class="act-btn primary">Hold Order</div><div class="act-btn">Dismiss</div></div></div></div>
+        <div class="full-alert warn" data-type="warn"><div><div class="fa-title">VPN/proxy access — Order #89234</div><div class="fa-meta">14:05 · Geo-risk module · Exit node: NL</div></div><div class="fa-right"><span class="badge b-med">Warning</span><div class="alert-actions"><div class="act-btn primary">Review</div><div class="act-btn">Dismiss</div></div></div></div>
+        <div class="full-alert warn" data-type="warn"><div><div class="fa-title">Chargeback threshold exceeded — Merchant #M29</div><div class="fa-meta">13:58 · Risk engine · 3.2% chargeback rate</div></div><div class="fa-right"><span class="badge b-med">Warning</span><div class="alert-actions"><div class="act-btn primary">Review</div><div class="act-btn">Dismiss</div></div></div></div>
+        <div class="full-alert warn" data-type="warn"><div><div class="fa-title">Rapid order duplication — User #U5502</div><div class="fa-meta">13:50 · Order fraud module · 5 identical orders</div></div><div class="fa-right"><span class="badge b-med">Warning</span><div class="alert-actions"><div class="act-btn primary">Cancel Dupes</div><div class="act-btn">Dismiss</div></div></div></div>
+        <div class="full-alert warn" data-type="warn"><div><div class="fa-title">Session anomaly — User #U6610</div><div class="fa-meta">13:44 · Session manager · 3 concurrent sessions</div></div><div class="fa-right"><span class="badge b-med">Warning</span><div class="alert-actions"><div class="act-btn primary">Invalidate</div><div class="act-btn">Dismiss</div></div></div></div>
+        <div class="full-alert warn" data-type="warn"><div><div class="fa-title">Referral abuse detected — Promo SAVE50</div><div class="fa-meta">13:40 · Promotion engine · 14 accounts, same device</div></div><div class="fa-right"><span class="badge b-med">Warning</span><div class="alert-actions"><div class="act-btn primary">Revoke</div><div class="act-btn">Dismiss</div></div></div></div>
+        <div class="full-alert info" data-type="info"><div><div class="fa-title">New device login — User #U1104</div><div class="fa-meta">14:12 · Auth module · iPhone 16, Mumbai</div></div><div class="fa-right"><span class="badge b-info">Info</span><div class="alert-actions"><div class="act-btn">Dismiss</div></div></div></div>
+        <div class="full-alert info" data-type="info"><div><div class="fa-title">Password changed — User #U0098</div><div class="fa-meta">14:10 · Auth module · User-initiated</div></div><div class="fa-right"><span class="badge b-info">Info</span><div class="alert-actions"><div class="act-btn">Dismiss</div></div></div></div>
+        <div class="full-alert info" data-type="info"><div><div class="fa-title">API key rotated — Service #SVC-14</div><div class="fa-meta">13:55 · Dev portal · Scheduled rotation</div></div><div class="fa-right"><span class="badge b-info">Info</span><div class="alert-actions"><div class="act-btn">Dismiss</div></div></div></div>
+        <div class="full-alert info" data-type="info"><div><div class="fa-title">Firewall rule updated — Rule #FW-88</div><div class="fa-meta">13:30 · WAF · Admin: ops@riskwatch.io</div></div><div class="fa-right"><span class="badge b-info">Info</span><div class="alert-actions"><div class="act-btn">Dismiss</div></div></div></div>
+        <div class="full-alert info" data-type="info"><div><div class="fa-title">Scheduled scan complete — 0 issues</div><div class="fa-meta">13:00 · Vulnerability scanner · All clear</div></div><div class="fa-right"><span class="badge b-info">Info</span><div class="alert-actions"><div class="act-btn">Dismiss</div></div></div></div>
+      </div>
+    </div>
+
+    <div class="page" id="page-transactions">
+      <div class="top-bar">
+        <div><h1>Transactions</h1><p>12,450 total &nbsp;·&nbsp; Today, April 25 2026</p></div>
+        <div class="live-badge"><span class="live-dot"></span>Live Feed</div>
+      </div>
+      <div class="page-cards2">
+        <div class="card"><div class="card-lbl">Total Volume</div><div class="card-val green" style="font-size:18px;">&#8377;4.2Cr</div><div class="card-sub"><span class="trend">&#8593; 11%</span> vs yesterday</div></div>
+        <div class="card"><div class="card-lbl">Avg Order Value</div><div class="card-val" style="font-size:18px;color:#63b3ed;">&#8377;3,374</div><div class="card-sub">&#8593; &#8377;142 today</div></div>
+        <div class="card"><div class="card-lbl">Success Rate</div><div class="card-val green" style="font-size:18px;">97.3%</div><div class="card-sub">342 failures today</div></div>
+        <div class="card"><div class="card-lbl">Flagged</div><div class="card-val amber" style="font-size:18px;">56</div><div class="card-sub">Under review</div></div>
+      </div>
+      <div class="txn-search">
+        <input type="text" id="txn-search-input" placeholder="Search by name, order ID, amount..." />
+        <select id="txn-status-filter"><option value="all">All Status</option><option value="success">Success</option><option value="failed">Failed</option><option value="pending">Pending</option></select>
+        <select id="txn-risk-filter"><option value="all">All Risk</option><option value="low">Low</option><option value="medium">Medium</option><option value="high">High</option><option value="critical">Critical</option></select>
+      </div>
+      <div class="tbl-card txn-full">
+        <table>
+          <thead><tr><th>Order ID</th><th>Name</th><th>Amount</th><th>Method</th><th>Status</th><th>Risk</th><th>Time</th><th>Location</th></tr></thead>
+          <tbody id="txn-body">
+            <tr><td>#ORD-9912</td><td>Rahul S.</td><td>&#8377;500</td><td>UPI</td><td><span class="badge b-ok">Success</span></td><td><span class="badge b-low">Low</span></td><td>14:32</td><td>Mumbai</td></tr>
+            <tr><td>#ORD-9911</td><td>Sneha P.</td><td>&#8377;2,000</td><td>Card</td><td><span class="badge b-fail">Failed</span></td><td><span class="badge b-high">High</span></td><td>14:28</td><td>Delhi</td></tr>
+            <tr><td>#ORD-9910</td><td>Arjun M.</td><td>&#8377;750</td><td>NetBanking</td><td><span class="badge b-ok">Success</span></td><td><span class="badge b-med">Medium</span></td><td>14:19</td><td>Pune</td></tr>
+            <tr><td>#ORD-9909</td><td>Priya K.</td><td>&#8377;12,500</td><td>Card</td><td><span class="badge b-fail">Failed</span></td><td><span class="badge b-crit">Critical</span></td><td>14:11</td><td>Dubai</td></tr>
+            <tr><td>#ORD-9908</td><td>Vikram R.</td><td>&#8377;320</td><td>UPI</td><td><span class="badge b-pend">Pending</span></td><td><span class="badge b-low">Low</span></td><td>14:07</td><td>Bangalore</td></tr>
+            <tr><td>#ORD-9907</td><td>Ananya T.</td><td>&#8377;5,400</td><td>Wallet</td><td><span class="badge b-ok">Success</span></td><td><span class="badge b-med">Medium</span></td><td>13:58</td><td>Chennai</td></tr>
+            <tr><td>#ORD-9906</td><td>Rohan V.</td><td>&#8377;890</td><td>UPI</td><td><span class="badge b-ok">Success</span></td><td><span class="badge b-low">Low</span></td><td>13:51</td><td>Hyderabad</td></tr>
+            <tr><td>#ORD-9905</td><td>Meera J.</td><td>&#8377;18,000</td><td>Card</td><td><span class="badge b-fail">Failed</span></td><td><span class="badge b-crit">Critical</span></td><td>13:44</td><td>Unknown</td></tr>
+            <tr><td>#ORD-9904</td><td>Karan D.</td><td>&#8377;1,100</td><td>NetBanking</td><td><span class="badge b-ok">Success</span></td><td><span class="badge b-low">Low</span></td><td>13:38</td><td>Kolkata</td></tr>
+            <tr><td>#ORD-9903</td><td>Nisha B.</td><td>&#8377;3,250</td><td>Card</td><td><span class="badge b-pend">Pending</span></td><td><span class="badge b-high">High</span></td><td>13:30</td><td>Jaipur</td></tr>
+            <tr><td>#ORD-9902</td><td>Dev P.</td><td>&#8377;650</td><td>UPI</td><td><span class="badge b-ok">Success</span></td><td><span class="badge b-low">Low</span></td><td>13:22</td><td>Mumbai</td></tr>
+            <tr><td>#ORD-9901</td><td>Isha R.</td><td>&#8377;9,900</td><td>Card</td><td><span class="badge b-fail">Failed</span></td><td><span class="badge b-high">High</span></td><td>13:15</td><td>Surat</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="page" id="page-settings">
+      <div class="top-bar">
+        <div><h1>Settings</h1><p>Platform configuration &amp; preferences</p></div>
+        <button class="save-btn">Save Changes</button>
+      </div>
+      <div class="settings-grid">
+        <div class="setting-card">
+          <div class="sec-title">Alert Thresholds</div>
+          <div class="setting-row"><div><div class="setting-lbl">Fraud score threshold</div><div class="setting-sub">Flag transactions above this score</div></div><input class="setting-input" type="number" value="75" min="1" max="100"/></div>
+          <div class="setting-row"><div><div class="setting-lbl">Max failed attempts</div><div class="setting-sub">Before auto-blocking user</div></div><input class="setting-input" type="number" value="5" min="1" max="50"/></div>
+          <div class="setting-row"><div><div class="setting-lbl">High-value order limit</div><div class="setting-sub">Amount (&#8377;) to flag for review</div></div><input class="setting-input" type="number" value="50000"/></div>
+          <div class="setting-row"><div><div class="setting-lbl">Chargeback % alert</div><div class="setting-sub">Trigger when rate exceeds</div></div><input class="setting-input" type="number" value="3" min="1" max="100"/></div>
+        </div>
+        <div class="setting-card">
+          <div class="sec-title">Notifications</div>
+          <div class="setting-row"><div><div class="setting-lbl">Email alerts</div><div class="setting-sub">Send critical alerts via email</div></div><label class="toggle"><input type="checkbox" checked/><div class="toggle-track"></div><div class="toggle-thumb"></div></label></div>
+          <div class="setting-row"><div><div class="setting-lbl">SMS notifications</div><div class="setting-sub">Critical alerts via SMS</div></div><label class="toggle"><input type="checkbox"/><div class="toggle-track"></div><div class="toggle-thumb"></div></label></div>
+          <div class="setting-row"><div><div class="setting-lbl">Slack integration</div><div class="setting-sub">Post alerts to #fraud-alerts</div></div><label class="toggle"><input type="checkbox" checked/><div class="toggle-track"></div><div class="toggle-thumb"></div></label></div>
+          <div class="setting-row"><div><div class="setting-lbl">Daily digest</div><div class="setting-sub">Summary report at 8:00 AM</div></div><label class="toggle"><input type="checkbox" checked/><div class="toggle-track"></div><div class="toggle-thumb"></div></label></div>
+        </div>
+        <div class="setting-card">
+          <div class="sec-title">Detection Rules</div>
+          <div class="setting-row"><div><div class="setting-lbl">Geo-velocity check</div><div class="setting-sub">Flag impossible travel</div></div><label class="toggle"><input type="checkbox" checked/><div class="toggle-track"></div><div class="toggle-thumb"></div></label></div>
+          <div class="setting-row"><div><div class="setting-lbl">VPN/proxy detection</div><div class="setting-sub">Flag masked IP access</div></div><label class="toggle"><input type="checkbox" checked/><div class="toggle-track"></div><div class="toggle-thumb"></div></label></div>
+          <div class="setting-row"><div><div class="setting-lbl">Device fingerprinting</div><div class="setting-sub">Track devices across sessions</div></div><label class="toggle"><input type="checkbox" checked/><div class="toggle-track"></div><div class="toggle-thumb"></div></label></div>
+          <div class="setting-row"><div><div class="setting-lbl">Dark web monitoring</div><div class="setting-sub">Match leaked credentials</div></div><label class="toggle"><input type="checkbox"/><div class="toggle-track"></div><div class="toggle-thumb"></div></label></div>
+        </div>
+        <div class="setting-card">
+          <div class="sec-title">System</div>
+          <div class="setting-row"><div><div class="setting-lbl">Auto-block IPs</div><div class="setting-sub">On critical threat detection</div></div><label class="toggle"><input type="checkbox" checked/><div class="toggle-track"></div><div class="toggle-thumb"></div></label></div>
+          <div class="setting-row"><div><div class="setting-lbl">Audit logging</div><div class="setting-sub">Log all admin actions</div></div><label class="toggle"><input type="checkbox" checked/><div class="toggle-track"></div><div class="toggle-thumb"></div></label></div>
+          <div class="setting-row"><div><div class="setting-lbl">2FA enforcement</div><div class="setting-sub">Require for all admin logins</div></div><label class="toggle"><input type="checkbox" checked/><div class="toggle-track"></div><div class="toggle-thumb"></div></label></div>
+          <div class="setting-row"><div><div class="setting-lbl">Data retention</div><div class="setting-sub">Days to keep transaction logs</div></div><input class="setting-input" type="number" value="90" min="7"/></div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script>
+const pages = document.querySelectorAll('.page');
+const navItems = document.querySelectorAll('.nav-item');
+
+navItems.forEach(item => {
+  item.addEventListener('click', () => {
+    const target = item.dataset.page;
+    navItems.forEach(n => n.classList.remove('active'));
+    item.classList.add('active');
+    pages.forEach(p => {
+      p.classList.remove('active');
+      if (p.id === 'page-' + target) p.classList.add('active');
+    });
+  });
+});
+
+const hours = ['6am','7am','8am','9am','10am','11am','12pm','1pm','2pm','3pm','4pm','5pm','6pm','7pm','8pm','9pm','10pm'];
+const vols  = [120,195,410,680,820,910,1050,980,870,760,720,810,950,1020,1100,860,440];
+
+new Chart(document.getElementById('lineChart'), {
+  type: 'line',
+  data: { labels: hours, datasets: [{ label: 'Transactions', data: vols, borderColor: '#63b3ed', backgroundColor: 'rgba(99,179,237,0.07)', borderWidth: 2, pointRadius: 2, pointBackgroundColor: '#63b3ed', fill: true, tension: 0.35 }] },
+  options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { ticks: { color: '#4a5568', font: { size: 10 }, maxTicksLimit: 9 }, grid: { color: 'rgba(255,255,255,0.04)' } }, y: { ticks: { color: '#4a5568', font: { size: 10 } }, grid: { color: 'rgba(255,255,255,0.04)' } } } }
+});
+
+new Chart(document.getElementById('pieChart'), {
+  type: 'doughnut',
+  data: { labels: ['Safe','Fraud'], datasets: [{ data: [95, 5], backgroundColor: ['#68d391','#e24b4a'], borderColor: ['#111318','#111318'], borderWidth: 3 }] },
+  options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: { callbacks: { label: c => c.label + ': ' + c.raw + '%' } } }, cutout: '60%' }
+});
+
+new Chart(document.getElementById('barChart'), {
+  type: 'bar',
+  data: { labels: ['Low','Medium','High','Critical'], datasets: [{ data: [7200,3890,1018,342], backgroundColor: ['#68d391','#f6ad55','#fc8181','#e24b4a'], borderRadius: 4, borderSkipped: false }] },
+  options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { ticks: { color: '#4a5568', font: { size: 11 } }, grid: { display: false } }, y: { ticks: { color: '#4a5568', font: { size: 10 }, callback: v => v >= 1000 ? (v/1000).toFixed(1)+'k' : v }, grid: { color: 'rgba(255,255,255,0.04)' } } } }
+});
+
+const threats = [
+  ['SQL injection attempt blocked — /api/checkout','WAF engine'],
+  ['Bot traffic spike — 4,200 req/min','Rate limiter'],
+  ['Card testing attack — 47 attempts','Payment fraud module'],
+  ['Account takeover attempt — User #U8812','Auth engine'],
+  ['VPN/proxy access flagged — Order #89234','Geo-risk module'],
+  ['Credential stuffing — 120 failures','Login protection'],
+  ['Chargeback threshold exceeded — Merchant #M29','Risk engine'],
+  ['Dark web credential match — email #U3371','Threat intelligence'],
+  ['Rapid order duplication — User #U5502','Order fraud module'],
+  ['Session hijack attempt — Token anomaly','Session manager']
+];
+let tIdx = 0;
+const simTimes = ['14:33','14:34','14:35','14:36','14:37','14:38','14:39'];
+
+document.getElementById('simBtn').addEventListener('click', () => {
+  const pick = threats[Math.floor(Math.random() * threats.length)];
+  const t = simTimes[tIdx % simTimes.length]; tIdx++;
+  const list = document.getElementById('dash-alerts');
+  const item = document.createElement('div');
+  item.className = 'alert-item new';
+  item.innerHTML = '<div>' + pick[0] + '</div><div class="at">' + t + ' · ' + pick[1] + '</div>';
+  list.insertBefore(item, list.firstChild);
+  if (list.children.length > 5) list.removeChild(list.lastChild);
+  setTimeout(() => item.classList.remove('new'), 600);
+});
+
+const filterBtns = document.querySelectorAll('.filter-btn');
+filterBtns.forEach(btn => {
+  btn.addEventListener('click', () => {
+    filterBtns.forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    const f = btn.dataset.filter;
+    document.querySelectorAll('.full-alert').forEach(a => {
+      a.style.display = (f === 'all' || a.dataset.type === f) ? '' : 'none';
+    });
+  });
+});
+
+const searchInput = document.getElementById('txn-search-input');
+const statusFilter = document.getElementById('txn-status-filter');
+const riskFilter = document.getElementById('txn-risk-filter');
+
+function filterTxns() {
+  const q = searchInput.value.toLowerCase();
+  const s = statusFilter.value;
+  const r = riskFilter.value;
+  document.querySelectorAll('#txn-body tr').forEach(row => {
+    const text = row.textContent.toLowerCase();
+    const statusBadge = row.querySelector('td:nth-child(5) .badge');
+    const riskBadge = row.querySelector('td:nth-child(6) .badge');
+    const statusMatch = s === 'all' || (statusBadge && statusBadge.textContent.toLowerCase() === s);
+    const riskMatch = r === 'all' || (riskBadge && riskBadge.textContent.toLowerCase() === r);
+    const searchMatch = !q || text.includes(q);
+    row.style.display = (statusMatch && riskMatch && searchMatch) ? '' : 'none';
+  });
+}
+if (searchInput) { searchInput.addEventListener('input', filterTxns); statusFilter.addEventListener('change', filterTxns); riskFilter.addEventListener('change', filterTxns); }
+</script>
